@@ -18,11 +18,11 @@ refs.searchBox.addEventListener(
 
 function onInputSearch(e) {
   e.preventDefault();
-
+  const form = e.currentTarget;
   const inputValue = refs.searchBox.value.trim();
   console.log(inputValue);
 
-  clearInterface();
+  form.reset();
 
   fetchCountries(inputValue)
     .then(data => {
@@ -35,10 +35,12 @@ function onInputSearch(e) {
       }
       renderMarkup(data);
     })
-    .catch(err => {
-      clearInterface();
-      Notify.failure('Oops, there is no country with that name');
-    });
+    .catch(onFetchError)
+    .finally(() => form.reset());
+}
+
+function onFetchError(error) {
+  Notify.failure('Oops, there is no country with that name');
 }
 
 const renderMarkup = data => {
@@ -72,8 +74,3 @@ const createInfoMarkup = data => {
       <p>Languages: ${Object.values(languages)}</p>`
   );
 };
-
-function clearInterface() {
-  refs.countriesList.innerHTML = '';
-  refs.countryInfo.innerHTML = '';
-}
